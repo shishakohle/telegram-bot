@@ -28,8 +28,16 @@ class TelegramBot:
             file_log.close()
 
     def token_is_valid(self):
-        botinfo = self.telegram_query("getMe", None)
+        botinfo = self.telegram_query("getMe")
         return botinfo['ok'] and botinfo['result']['is_bot'] and botinfo['result']['username'] == self.bot_telegram_id
 
-    def telegram_query(self, telegram_method, args):
-        return json.loads(requests.get('https://api.telegram.org/bot' + self.token + '/' + telegram_method).text)
+    def telegram_query(self, telegram_method: str, args: dict = None) -> list:
+        query = telegram_method + "?"
+        if args is None:
+            args = {}
+        for arg, val in args.items():
+            query += arg + '=' + val + '&'
+        self.log("Query to Telegram Bot API: " + query)
+        response = json.loads(requests.get('https://api.telegram.org/bot' + self.token + '/' + query).text)
+        self.log("Telegram Bot API responded: " + str(response))
+        return response
