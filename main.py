@@ -3,13 +3,15 @@ import GuteFrageNet
 
 
 def handle_message(message: dict):
-    # extract first word in the message
-    first_word = message['text'].split(' ', 1)[0]
-    # handle the /frage command
-    if first_word == "/frage" or first_word == "/frage@MaHueWG_bot":
-        question = GuteFrageNet.latest_question()
-        msg = "The latest question on gutefrage.net is: " + question
-        mahue_bot.telegram_query("sendMessage", {'chat_id': message['chat']['id'], 'text': msg})
+    # check if message has a key 'text' (messages that indicates bot has been added to new channel does not have a text)
+    if 'text' in message:
+        # extract first word in the message
+        first_word = message['text'].split(' ', 1)[0]
+        # handle the /frage command
+        if first_word == "/frage" or first_word == "/frage@MaHueWG_bot":
+            question = GuteFrageNet.latest_question()
+            msg = "The latest question on gutefrage.net is: " + question
+            mahue_bot.telegram_query("sendMessage", {'chat_id': message['chat']['id'], 'text': msg})
 
 
 def handle_update(update: dict):
