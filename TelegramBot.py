@@ -36,8 +36,8 @@ class TelegramBot:
         if args is None:
             args = {}
         for arg, val in args.items():
-            query += arg + '=' + val + '&'
-        self.log("Query to Telegram Bot API: " + query)
+            query += arg + '=' + str(val) + '&'
+        # self.log("Query to Telegram Bot API: " + query)
         response = json.loads(requests.get('https://api.telegram.org/bot' + self.token + '/' + query).text)
-        self.log("Telegram Bot API responded: " + str(response))
+        # self.log("Telegram Bot API responded: " + str(response))
         return response
