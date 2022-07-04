@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from TelegramBot import TelegramBot
 import GuteFrageNet
 
