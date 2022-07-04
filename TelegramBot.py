@@ -38,6 +38,7 @@ class TelegramBot:
         for arg, val in args.items():
             query += arg + '=' + str(val) + '&'
         # self.log("Query to Telegram Bot API: " + query)
+        # TODO: https://stackoverflow.com/questions/16511337/correct-way-to-try-except-using-python-requests-module
         response = json.loads(requests.get('https://api.telegram.org/bot' + self.token + '/' + query).text)
         # self.log("Telegram Bot API responded: " + str(response))
         return response
