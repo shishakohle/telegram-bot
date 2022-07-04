@@ -1,2 +1,4 @@
 /token.txt
 /telegram-bot.log
+/.idea
+/__pycache__
