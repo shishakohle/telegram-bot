@@ -6,6 +6,9 @@ import requests
 import json
 import datetime
 import dateutil.parser
+import pytz
+# For these imports, install as:
+# pip install --upgrade py-dateutil pytz
 
 
 def handle_message(message: dict):
@@ -20,7 +23,7 @@ def handle_message(message: dict):
             question = GuteFrageNet.latest_question()
             msg = "The latest question on gutefrage.net is:\n\n" + question
             mahue_bot.telegram_query("sendMessage", {'chat_id': message['chat']['id'], 'text': msg})
-        # handle the /regen command
+        # handle the /weather command
         elif command == "/weather" or command == "/weather@MaHueWG_bot":
             locations = {
                 'Vienna':  {'latitude': "48.2085", 'longitude': "16.3725"},
@@ -56,8 +59,9 @@ def handle_message(message: dict):
                 precipitations = response['hourly']['precipitation']
                 counter = 1
                 for i in range(0, len(timestamps)):
-                    date = dateutil.parser.parse(timestamps[i])
-                    current = datetime.datetime.now()
+                    timezone_europeBerlin = pytz.timezone("Europe/Berlin")
+                    date = timezone_europeBerlin.localize(dateutil.parser.parse(timestamps[i]))
+                    current = datetime.datetime.now(timezone_europeBerlin)
                     if date > current and counter <= 12:
                         msg += "\n0" if date.hour < 10 else "\n"
                         msg += str(date.hour) + (" am: " if date.hour < 12 else " pm: ") + str(temperatures[i]) + " °C, " + str(precipitations[i]) + " mm"
