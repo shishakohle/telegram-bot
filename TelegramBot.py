@@ -6,6 +6,7 @@ class TelegramBot:
     bot_telegram_id = None
     token = None
     filepath_log = None
+    is_ready = False
 
     def __init__(self, bot_telegram_id, filepath_token, filepath_log):
         self.bot_telegram_id = bot_telegram_id
@@ -17,6 +18,7 @@ class TelegramBot:
             file_token.close()
         if self.token_is_valid():
             self.log("Token is valid.")
+            self.is_ready = True
         else:
             self.log("Token is NOT valid.")
 
@@ -29,9 +31,28 @@ class TelegramBot:
 
     def token_is_valid(self):
         botinfo = self.telegram_query("getMe")
-        return botinfo['ok'] and botinfo['result']['is_bot'] and botinfo['result']['username'] == self.bot_telegram_id
+        try:
+            return botinfo and botinfo['ok'] and botinfo['result']['is_bot'] and botinfo['result']['username'] == self.bot_telegram_id
+        except KeyError as e:
+            return False
 
-    def telegram_query(self, telegram_method: str, args: dict = None) -> list:
+    def telegram_query(self, method: str, args: dict = None, files: dict = None) -> dict:
+        if method != "getMe" and not self.is_ready:
+            return None
+        url = 'https://api.telegram.org/bot' + self.token + '/' + method
+        if files:
+            files_opened = {parameter: open(filepath, 'rb').read() for (parameter, filepath) in files.items()}
+        else:
+            files_opened = None
+        try:
+            response = requests.post(url, data=args, files=files_opened).json()
+        except requests.exceptions.RequestException as e:
+            response = None
+            self.log("Query to Bot API failed.")
+        return response
+
+    """
+    def telegram_query(self, telegram_method: str, args: dict = None) -> list:  # TODO: isn't it -> dict ??
         query = telegram_method + "?"
         if args is None:
             args = {}
@@ -42,3 +63,4 @@ class TelegramBot:
         response = json.loads(requests.get('https://api.telegram.org/bot' + self.token + '/' + query).text)
         # self.log("Telegram Bot API responded: " + str(response))
         return response
+    """
