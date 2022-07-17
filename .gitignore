@@ -2,3 +2,5 @@
 /telegram-bot.log
 /.idea
 /__pycache__
+*.mp3
+*.ogg
